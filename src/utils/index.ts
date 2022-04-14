@@ -55,10 +55,23 @@ export async function authorizeGitLabByCode(code: string) {
     code_verifier: window.sessionStorage.getItem('codeVerifier'),
   };
 
-  const response = await axios.post(
+  return await axios.post<{ access_token: string; refresh_token: string }>(
     `${process.env.REACT_APP_GITLAB_BASE_URL}/oauth/token`,
     params
   );
+}
 
-  console.log(response);
+export async function getProjects() {
+  const params = {
+    membership: true,
+  };
+
+  return await axios.get<
+    { id: number; name: string; http_url_to_repo: string }[]
+  >(`${process.env.REACT_APP_GITLAB_BASE_URL}/api/v4/projects`, {
+    params,
+    headers: {
+      Authorization: `Bearer ${window.localStorage.getItem('access_token')}`,
+    },
+  });
 }

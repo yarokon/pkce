@@ -9,13 +9,21 @@ export function GitlabCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('search', search);
     const { code, state, error } = queryString.parse(search);
 
     if (!error && state === window.sessionStorage.getItem('state') && code) {
+      console.log('\nCODE');
       console.log(code);
 
-      authorizeGitLabByCode(code as string);
+      authorizeGitLabByCode(code as string).then(
+        ({ data: { access_token, refresh_token } }) => {
+          console.log('\nACCESS_TOKEN');
+          console.log(access_token);
+
+          localStorage.setItem('access_token', access_token);
+          localStorage.refresh_token('refresh_token', refresh_token);
+        }
+      );
 
       navigate('/');
     }
